@@ -1,0 +1,106 @@
+# Official DocumentationL: https://www.gnu.org/software/bash/manual/html_node/Readline-Init-File-Syntax.html
+
+# Make Tab autocomplete regardless of filename case
+set completion-ignore-case on
+
+# Underscores and hyphens are treated equally when completing
+set completion-map-case on
+
+# Make completions appear immediately after pressing TAB once, instead of the 
+# default behavior which is to show them after pressing twice
+set show-all-if-ambiguous on
+set show-all-if-unmodified on
+
+# If set to On, completed directory names have a slash
+# appended.
+set mark-directories on
+
+# Immediately add a trailing slash when autocompleting symlinks to directories
+set mark-symlinked-directories on
+
+# Use Up/Down Arrow key to navigate through command history.
+# Use the text that has already been typed as the prefix for searching through
+# commands (i.e. more intelligent Up/Down behavior)
+"\e[B": history-search-forward   # Down Arrow
+"\e[A": history-search-backward  # Up Arrow
+
+# Use Ctrl+Left Arrow for backward word-navigation
+"\e[1;5D": backward-word
+"\e[5D":   backward-word
+"\e\e[D":  backward-word
+
+# Use Ctrl+Right Arrow for forward word-navigation
+"\e[1;5C": forward-word
+"\e[5C":   forward-word
+"\e\e[C":  forward-word
+
+# Use Ctrl+Delete/Backspace for delete word forward and backward:
+#   * https://unix.stackexchange.com/questions/150578/confusing-behavior-of-emacs-style-keybindings-in-bash/150591#150591
+#   * https://unix.stackexchange.com/questions/264791/ctrl-backspace-and-ctrl-delete-in-bash
+#
+# Type `Ctrl+V` then `Ctrl+Delete`; this will insert something like "^[[3;5~" 
+# where the initial "^[" is a visual representation of the escape character. 
+# Then the binding is:
+# "\e[3;5~": kill-word
+
+# Use Alt/Meta + Delete to delete the preceding word
+#"\e[3;3~": kill-word
+
+# Use "Ctrl + Backspace" to delete words backwards
+"\C-h": backward-kill-word
+
+# Use "Ctrl + Delete" to delete words forwards
+"\e[3;5~": kill-word
+
+# Do not autocomplete hidden files unless the pattern explicitly begins with a dot
+set match-hidden-files off
+
+# Show all autocomplete results at once
+set page-completions off
+
+# If there are more than 200 possible completions for a word, ask to show them all
+set completion-query-items 200
+
+# Show extra file information when completing, like `ls -F` does
+set visible-stats on
+
+# Be more intelligent when autocompleting by also looking at the text after
+# the cursor. For example, when the current line is "cd ~/src/mozil", and
+# the cursor is on the "z", pressing Tab will not autocomplete it to "cd
+# ~/src/mozillail", but to "cd ~/src/mozilla". (This is supported by the
+# Readline used by Bash 4.)
+set skip-completed-text on
+
+# Allow UTF-8 input and output, instead of showing stuff like $'\0123\0456'
+set input-meta on
+set output-meta on
+set convert-meta off
+
+# When you have a folder with lots of similarly named files and you are not 
+# sure how far the completion has gone when you press TAB. The first part that 
+# has been completed will be replaced by "...", and it is simple to see what 
+# you need to type to finish the completion
+#
+# Example:
+#
+# $ ls
+# longFileNameLINUX-2.6.37-4  longFileNameLINUX-2.6.37-7  longFileNameLINUX-2.6.38-11  VeryCompliCATEDfileNAME.txt
+# longFileNameLINUX-2.6.37-6  longFileNameLINUX-2.6.37-8  longFileNameLINUX-2.6.38-9
+# $ ls long<TAB>
+# ...7-4   ...7-6   ...7-7   ...7-8   ...8-11  ...8-9
+# $ ls longFileNameLINUX-2.6.3
+# 
+#set completion-prefix-display-length 2
+
+# Make Ctrl-j and Ctrl-k to cycle through the available completions. 
+# This is useful when you get a small number of possible completions (say 2-4), 
+# and you know it would be faster to simply cycle through them with a few 
+# key presses, than to actually type it out.
+# Notice: Ctrl-k used to cut from curser position to end of the line by default
+#Control-j: menu-complete
+#Control-k: menu-complete-backward
+
+# If set to On, readline will display completions with
+# matches sorted horizontally in alphabetical order, rather
+# than down the screen.
+set print-completions-horizontally off

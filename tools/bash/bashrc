@@ -1,0 +1,247 @@
+#!/usr/bin/env bash
+
+# ~/.bashrc: executed by bash(1) for non-login shells.
+
+# If not running interactively, don't do anything
+# (the `-` hold all the options with which the shell started)
+case $- in
+    *i*)
+        # The shell is interactive
+        ;; 
+    *) 
+        # The shell is not interactive and no need to load the settings
+        return
+        ;;
+esac
+
+# Source global definitions
+if [ -f /etc/bash.bashrc ]; then
+    source /etc/bash.bashrc
+fi
+
+############################################
+###         Bash Shell Options           ###
+############################################
+
+# Case-insensitive globbing (used in pathname expansion)
+shopt -s nocaseglob
+
+# Autocorrect typos in path names when using `cd`
+shopt -s cdspell
+
+# Allows you to cd into directory merely by typing the directory name.
+# e.g. `**/qux` will enter `./foo/bar/baz/qux`
+shopt -s autocd 
+
+# Recursive globbing, e.g. `echo **/*.txt`
+# If set, the pattern "**" used in a pathname expansion context will
+# match all files and zero or more directories and subdirectories.
+shopt -s globstar
+
+# Disable flow control in the terminal (ctrl-s and ctrl-q)
+stty -ixon
+
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize
+
+############################################
+###     Bash Programmable Completions    ###
+############################################
+
+# Do not autocomplete when accidentally pressing Tab on an empty line. (It takes
+# forever and yields "Display all 15 gazillion possibilites?")
+shopt -s no_empty_cmd_completion
+
+# Enable programmable completion features
+if ! shopt -oq posix; then
+  if [ -f /usr/share/bash-completion/bash_completion ]; then
+    . /usr/share/bash-completion/bash_completion
+  elif [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+  fi
+fi
+
+# Git completations
+[[ -f "${HOME}/.git-completion.bash" ]] && source "${HOME}/.git-completion.bash"
+
+# Enable tab completion for `g` by marking it as an alias for `git`
+if type _git &> /dev/null; then
+    complete -o default -o nospace -F _git g;
+fi;
+
+# SSH and `scp` command completion
+# Add tab completion for SSH hostnames based on ~/.ssh/config, ignoring wildcards
+[ -e "${HOME}/.ssh/config" ] && complete -o "default" -o "nospace" -W "$(grep "^Host" ~/.ssh/config | grep -v "[?*]" | cut -d " " -f2)" scp sftp ssh;
+
+############################################
+###            Bash History              ###
+############################################
+
+# Don't put duplicate lines or lines starting with space in the history.
+# The history control option, ignorespace, is useful for executing commands that
+# you don't want to record in your command history.
+# See bash(1) for more options.
+HISTCONTROL=ignoredups:ignorespace
+
+# Don't save the following commands into the history
+export HISTIGNORE='history:ls -l:exit:ll:cd -:cd ..'
+
+# Increase Bash history size. Allow 32^3 entries; the default is 500.
+export HISTSIZE='32768'; # History session size
+export HISTFILESIZE="${HISTSIZE}"; # History file size
+
+# Save the date and time of each command in the history
+export HISTTIMEFORMAT='%Y-%m-%d %H:%M:%S '
+
+# Append to the history file, rather than having sessions overwite existing
+# history file
+shopt -s histappend
+
+# Write history to .bash_history immediately, rather than post-session.
+# -a writes current/new lines to history file
+# -n reloads only new commands
+# Source: https://askubuntu.com/a/673283
+PROMPT_COMMAND='history -a;history -n'
+
+############################################
+###      Shell Environment Variables     ###
+############################################
+
+# Make vim the default editor.
+export EDITOR='vim';
+
+# Flag `-X` is used in order not to clear the screen after quitting a manual
+# page.
+export MANPAGER='less -X';
+
+
+############################################
+###                 Pager                ###
+############################################
+
+# Make less the default pager, and specify some useful defaults.
+less_options=(
+    # If the entire text fits on one screen, just show it and quit. (Be more
+    # like "cat" and less like "more".)
+    #--quit-if-one-screen
+
+    # Do not clear the screen upon exit.
+    #--no-init
+
+    # Like "smartcase" in Vim: ignore case unless the search pattern is mixed.
+    --ignore-case
+
+    # Do not automatically wrap long lines.
+    --chop-long-lines
+
+    # Allow ANSI colour escapes, but no other escapes.
+    # Resources:
+    #   https://linux.die.net/man/1/less   (search for: "export LESS")
+    --RAW-CONTROL-CHARS
+
+    # Do not ring the bell when trying to scroll past the end of the buffer.
+    --quiet
+
+    # Do not complain when we are on a dumb terminal.
+    --dumb
+);
+
+export LESS="${less_options[*]}";
+unset less_options;
+
+# Enable scrolling through less output using mouse scroll.
+# --mouse option was introduced in less version 581 (May, 2021) so we need to 
+# check if the version of less supports it before enabling it.
+if less --help 2>&1 | grep -q -- '--mouse'; then
+    export LESS="${LESS} --mouse"
+fi
+
+export PAGER='less';
+
+# Do not clear the screen upon exit.
+# -X or --no-init
+# lessk, where "k" is for "keep" the content 
+alias lessk='less -X'
+
+# -i Enables case-insensitive searching, unless the search pattern includes 
+# uppercase letters
+alias l='less -X -i'
+
+############################################
+###              Workflow                ###
+############################################
+
+# Returns (prints) the linux distribution and version in the format: 
+# <distirbution>-<version>
+# Usage example:
+# ```sh
+# os_version="unknown-os"
+# if res="$(get_linux_distro_and_version 2>/dev/null)"; then
+#     os_version="${res}"
+# fi
+# if [ "${os_version}" == "unknown-os" ]; then
+#     exit 1
+# fi
+# ```
+function get_linux_distro_and_version() {
+    # Check if /etc/os-release exists
+    if [ -f /etc/os-release ]; then
+        # Source the os-release file
+        source /etc/os-release
+        # Construct the output string
+        echo "${ID,,}-${VERSION_ID}"
+        return 0
+    else
+        echo "unknown-os" >&2
+        return 1
+    fi
+}
+export -f get_linux_distro_and_version
+
+# Returns (prints) the software directory based on the linux distribution
+# The format is `/prefix/software/<os-distirbution-name>-<version>/`
+#
+# Usage example:
+# ```sh
+# path_to_sw_dir="/path/to/some/default/sw/dir"
+# if res=$(get_sw_dir 2>/dev/null); then
+#     path_to_sw_dir=$(get_sw_dir)
+#     echo "path_to_sw_dir is not default"
+# fi
+# echo "path_to_sw_dir: ${path_to_sw_dir}"
+# ```
+function get_sw_dir() {
+    local _sw_prefix=""
+    local _workspace="${WORKSPACE_DIR}"
+    local _os_version="unknown-os"
+    if result="$(get_linux_distro_and_version 2>/dev/null)"; then
+        _os_version="${result}"
+    fi
+    if [ "${_os_version}" == "unknown-os" ]; then
+        return 1
+    fi
+    _sw_prefix="${_workspace}/software/${_os_version}"
+    echo "${_sw_prefix}"
+}
+export -f get_sw_dir
+
+export WORKSPACE_DIR="${HOME}/workspace"
+export REPOSITORIES_DIR="${WORKSPACE_DIR}/repositories"
+export PROJECTS_DIR="${WORKSPACE_DIR}/projects"
+SW_DIR=$(get_sw_dir)
+export SW_DIR
+export OS_VERSION_STRING=$(get_linux_distro_and_version)
+
+alias cdw='cd ${WORKSPACE_DIR}/'
+alias cdr='cd ${REPOSITORIES_DIR}/'
+alias cdp='cd ${PROJECTS_DIR}/'
+alias cds='cd ${SW_DIR}/'
+
+############################################
+###         Source Other Files           ###
+############################################
+
+if [ -f "${HOME}/.config/loader.sh" ] && [ -r "${HOME}/.config/loader.sh" ]; then
+    source "${HOME}/.config/loader.sh"
+fi

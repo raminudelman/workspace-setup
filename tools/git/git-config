@@ -1,0 +1,316 @@
+[core]
+
+    # Treat spaces before tabs and all kinds of trailing whitespace as an error
+    # [default] trailing-space: looks for spaces at the end of a line
+    # [default] space-before-tab: looks for spaces before tabs at the beginning of a line
+    whitespace = space-before-tab,-indent-with-non-tab,trailing-space
+
+    # If false, the ctime differences between the index and the working tree 
+    # are ignored; useful when the inode change time is regularly modified by 
+    # something outside Git (file system crawlers and some backup systems)
+    trustctime = false
+
+    # Prevent showing files whose names contain non-ASCII symbols as unversioned.
+    # http://michael-kuehnel.de/git/2014/11/21/git-mac-osx-and-german-umlaute.html
+    precomposeunicode = false
+
+    # Speed up commands involving untracked files such as `git status`.
+    # https://git-scm.com/docs/git-update-index#_untracked_cache
+    untrackedCache = true
+
+    # Set the git editor
+    editor = code --wait
+	pager = delta
+
+[color]
+
+    # Use colors in Git commands that are capable of colored output when
+    # outputting to the terminal. (This is the default setting in Git ≥ 1.8.4.)
+    ui = auto
+
+[color "branch"]
+
+    current = yellow reverse
+    local = yellow
+    remote = green
+
+[color "diff"]
+
+    meta = yellow bold
+    frag = magenta bold # line info
+    old = red # deletions
+    new = green # additions
+
+[color "status"]
+
+    added = yellow
+    changed = green
+    untracked = cyan
+
+[commit]
+
+    template = ~/.config/git/git-message
+
+[diff]
+
+    # Use vscode as the diff tool for git
+    tool = vscode
+
+    # Detect copies as well as renames
+    renames = copies
+
+    # Make `git diff` show a list of submodule commit messages (with the 
+    # changes themselves) instead of just the previous and current commit
+    # hashes.
+    # Can also be `diff` to show changes themselves (and not only commit
+    # messages) to the submodules that were changed between the commit range.
+    submodule = log 
+
+    # Use the slower but better patience diff algorithm
+    algorithm = patience
+
+    # Use new diff algorithm to make e.g. function diffs look better.
+    compactionheuristic = true
+
+[difftool "vscode"]
+    cmd = code --wait --diff "$LOCAL" "$REMOTE"
+    prompt = false
+
+[merge]
+
+    tool = vscode
+
+    # Include summaries of merged commits in newly created merge commit messages
+    log = true
+
+[mergetool "vscode"]
+
+    # Use vscode as the merge tool for git
+    cmd = code --wait "$MERGED"
+
+    # Don't prompt before opening the merge tool.
+    prompt = false
+
+    # Don't keep backups of the merge tool inputs.
+    # keepBackup = false
+
+    # Don't keep the merge tool temporary input/output files.
+    # keepTemporaries = false
+
+[push]
+
+    # https://git-scm.com/docs/git-config#Documentation/git-config.txt-pushdefault
+    default = simple
+
+    # Make `git push` push relevant annotated tags when pushing branches out.
+    followTags = true
+
+[alias]
+
+    # courtesy of https://stackoverflow.com/a/34467298
+    lg = !"git lg1"
+    lg1 = "!f() { if [ $# -eq 0 ]; then git lg1-specific --all; else git lg1-specific --branches=$@; fi; }; f"
+    lg2 = "!f() { if [ $# -eq 0 ]; then git lg1-specific --all; else git lg1-specific --branches=$@; fi; }; f"
+    lg3 = "!f() { if [ $# -eq 0 ]; then git lg1-specific --all; else git lg1-specific --branches=$@; fi; }; f"
+
+    lg1-specific = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)'
+    lg2-specific = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(auto)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)'
+    lg3-specific = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset) %C(bold cyan)(committed: %cD)%C(reset) %C(auto)%d%C(reset)%n''          %C(white)%s%C(reset)%n''          %C(dim white)- %an <%ae> %C(reset) %C(dim white)(committer: %cn <%ce>)%C(reset)'
+
+    co = checkout
+
+    # typo stuff
+    cehckout = checkout
+    ceckout = checkout
+    chekout = checkout
+    commti = commit
+    comimt = commit
+    comit = commit
+
+    # View the current working tree status: short format and long format
+    s = status -s
+    ss = status
+
+    # Just print the name of the current branch
+    cb = branch --show-current
+
+    # Show branches
+    bv = branch -v
+    ba = branch -a
+    bb = branch -v -a
+
+    fall = fetch --all
+
+    df = diff
+
+    # show diff between staged changes and last commit
+    dc = diff --cached
+
+    # Get the current diff but show differences between characters
+    # instead of just the differences between lines.
+    word-diff = diff --word-diff
+    dfw = diff --word-diff
+
+    # Amend the currently staged files to the latest commit
+    amend-last-commit = commit --amend --reuse-message=HEAD
+
+    # Oops
+    fix-last-commit = commit --amend --reuse-message=HEAD --edit
+
+    # Switch to a branch, creating it from the current branch if necessary
+    go = "!f() { git checkout -b \"$1\" 2> /dev/null || git checkout \"$1\"; }; f"
+
+    # Show verbose output about tags, branches or remotes
+    tags = tag -l
+    # Show all branches and also show which branch is tracked by the local branch
+    branches = branch -a -vv
+    # Show all remotes
+    remotes = remote -v
+
+    # List aliases
+    aliases = config --get-regexp alias
+
+    # Remove the old tag with this name and tag the latest commit with it.
+    # Usage: git tag <tag_name>
+    retag = "!r() { git tag -d $1 && git push origin :refs/tags/$1 && git tag $1; }; r"
+
+    # Undo the last commit but keep the changes in the working directory
+    undo = reset --soft HEAD^
+
+    # Print the name of the current branch.
+    current-branch = symbolic-ref --short HEAD
+
+    # Show committed files (to local repository) but not pushed to remote repository
+    notpushed = !git log --format=oneline origin/$(git current-branch)..HEAD
+
+    # Merge a branch with a merge commit and use the more time-consuming
+    # patience diff algorithm
+    merge-patience = !git noff -Xpatience
+
+    # Assume the specified file is unchanged to stop changes
+    # being seen by Git
+    assume = update-index --assume-unchanged
+
+    # No longer assume a specified file remains unchanged
+    unassume = update-index --no-assume-unchanged
+
+    # List all files that are assumed to be unchanged
+    list-assumed = !git ls-files -v | grep '^[hsmrck?]' | cut -c 3-
+
+    # Shows the diff between the state <number> revisions ago and the current state
+    # Example of usage: `git di <number>` 
+    di = !"d() { git diff --patch-with-stat HEAD~$1; }; git diff-index --quiet HEAD -- || clear; d"
+
+    # Find branches containing commit
+    grep-commit-in-branch = "!f() { git branch -a --contains $1; }; f"
+
+    # Find tags containing commit
+    grep-tag = "!f() { git describe --always --contains $1; }; f"
+
+    # Find commits by source code
+    grep-commit-by-source-v1 = "!f() { \
+        git log --decorate --date=short --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' -S$1; \
+    }; f"
+
+    # Find commits by source code (another version)
+    grep-commit-by-source-v2 = "!f() { \
+        git log --decorate --date=short --pretty=custom -S\"$1\"; \
+    }; f"
+
+    # Find commits by commit message
+    grep-commit-by-message = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short --grep=$1; }; f"
+
+    # List contributors with number of commits
+    contributors = shortlog --summary --numbered
+
+    co = checkout
+
+    # Find commits by commit message.
+    cm = "!f() { \
+        git log --pretty=custom --decorate --date=short --grep=\"$1\"; \
+    }; f"
+
+    # Credit an author on the latest commit.
+    credit = "!f() { \
+        if [ -n \"$1\" ] && [ -n \"$2\" ]; then \
+            git commit --amend --author \"$1 <$2>\" -C HEAD; \
+        fi \
+    }; f"
+
+    # Credit a co-author on the latest commit.
+    #
+    # https://help.github.com/en/articles/creating-a-commit-with-multiple-authors
+    # https://help.github.com/en/articles/creating-a-commit-on-behalf-of-an-organization
+    credit-co-author = "!f() { \
+        if [ -n \"$1\" ] && [ -n \"$2\" ]; then \
+            GIT_EDITOR=\"git interpret-trailers --in-place --trailer='Co-authored-by: $1 <$2>'\" git commit --amend; \
+        fi \
+    }; f"
+
+    # List remote branches.
+    lrb = "!f() { \
+        remote="${1:-origin}"; \
+        git ls-remote --heads "$remote"; \
+    }; f"
+
+    # Merge GitHub pull request on top of the current branch or,
+    # if a branch name is specified, on top of the specified branch.
+    mpr = "!f() { \
+        declare currentBranch=\"$(git symbolic-ref --short HEAD)\"; \
+        declare branch=\"${2:-$currentBranch}\"; \
+        if [ $(printf \"%s\" \"$1\" | grep '^[0-9]\\+$' > /dev/null; printf $?) -eq 0 ]; then \
+            git fetch origin refs/pull/$1/head:pr/$1 && \
+            git checkout -B $branch && \
+            git rebase $branch pr/$1 && \
+            git checkout -B $branch && \
+            git merge pr/$1 && \
+            git branch -D pr/$1 && \
+            git commit --amend -m \"$(git log -1 --pretty=%B)\n\nClose #$1\"; \
+        fi \
+    }; f"
+
+    # Remove the tag with the specified tag name if
+    # exists and tag the latest commit with that name.
+    retag = "!f() { \
+        git tag -d "$1" &> /dev/null; \
+        git tag $1; \
+    }; f"
+
+    # Remove last commits (by default it removes the last commit).
+    rlc = "!f() { \
+        declare n=\"${1:-1}\"; \
+        git reset --hard \"HEAD~$n\"; \
+    }; f"
+
+    # Undo last commits (by default it undoes the last commit).
+    ulc = "!f() { \
+        declare n=\"${1:-1}\"; \
+        git reset --soft \"HEAD~$n\"; \
+    }; f"
+
+    # Old: Stopped working for some reason and does not work on WSL. Maybe works on non-WSL terminal but I didn't check!
+    # prompt = !"prompt_git() { local s=''; local branchName=''; if [ \"$(git rev-parse --is-inside-work-tree &>/dev/null; echo \"${?}\")\" == '0' ]; then if [ \"$(git rev-parse --is-inside-git-dir 2> /dev/null)\" == 'false' ]; then if [[ -O \"$(git rev-parse --show-toplevel)/.git/index\" ]]; then git update-index --really-refresh -q &> /dev/null; fi; if ! git diff --quiet --ignore-submodules --cached; then s+='+'; fi; if ! git diff-files --quiet --ignore-submodules --; then s+='!'; fi; if [ -n \"$(git ls-files --others --exclude-standard)\" ]; then s+='?'; fi; if git rev-parse --verify refs/stash &> /dev/null; then s+='$'; fi; fi; branchName=\"$(git symbolic-ref --quiet --short HEAD 2> /dev/null || git rev-parse --short HEAD 2> /dev/null || echo '(unknown)')\"; echo \"(${1}${branchName} ${s})\"; else return; fi; }; prompt_git"
+
+	prompt = "!git_prompt() { \
+        local s=\"\"; \
+        local branchName=\"\"; \
+        git rev-parse --is-inside-work-tree &>/dev/null || return; \
+        if ! git rev-parse --is-inside-git-dir &>/dev/null; then \
+            git diff --quiet --ignore-submodules --cached || s+=\"+\"; \
+            git diff-files --quiet --ignore-submodules -- || s+=\"!\"; \
+            [ -n \"$(git ls-files --others --exclude-standard)\" ] && s+=\"?\"; \
+            git rev-parse --verify refs/stash &>/dev/null && s+=\"$\"; \
+        fi; \
+        branchName=\"$(git symbolic-ref --quiet --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null || echo \"unknown\")\"; \
+        echo \"${branchName} ${s}\"; \
+    }; git_prompt"
+
+[interactive]
+	diffFilter = delta --color-only
+
+[delta]
+	navigate = true
+
+[include]
+    # For personal configuration e.g., user and email
+    path= ~/.config/config-local

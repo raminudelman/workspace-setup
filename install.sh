@@ -41,6 +41,7 @@ usage() {
     echo ""
     echo "Available profiles: "
     echo "  - default (default)"
+    echo "  - home"
 }
 
 function parse_args() {

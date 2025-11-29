@@ -5,8 +5,10 @@
 # branch
 
 # Check that OLD_PARENT and NEW_PARENT are valid
-if [ ! -z "$NEW_PARENT" ] || [ ! -z "$OLD_PARENT" ]; then
+if [ -z "$NEW_PARENT" ] || [ -z "$OLD_PARENT" ]; then
     echo "Error: NEW_PARENT and OLD_PARENT must be set to valid git refs"
+    echo "NEW_PARENT=$NEW_PARENT"
+    echo "OLD_PARENT=$OLD_PARENT"
     exit 1
 fi
 

@@ -16,7 +16,7 @@ mkdir -p "$HOME/.config/bash"
 # Copy configuration files
 cp ${SCRIPT_DIR}/bash-rc            "$HOME/.config/bash/"
 cp ${SCRIPT_DIR}/bash-profile       "$HOME/.config/bash/"
-cp ${SCRIPT_DIR}/bash-inputrc-*.sh  "$HOME/.config/bash/"
+cp ${SCRIPT_DIR}/bash-inputrc*      "$HOME/.config/bash/"
 cp ${SCRIPT_DIR}/bash-aliases*.sh   "$HOME/.config/bash/"
 cp ${SCRIPT_DIR}/bash-prompt*.sh    "$HOME/.config/bash/"
 cp ${SCRIPT_DIR}/bash-functions*.sh "$HOME/.config/bash/"

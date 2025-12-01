@@ -10,18 +10,26 @@ if [ -n "${SCRIPT_DIR+x}" ]; then
 fi
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
+# Argument 1 expected to be environment.
+# Default is "default"
+ENV="${1:-default}"
+
+echo "⚙️ Starting Bash installation..."
+
 # Create necessary directories
 mkdir -p "$HOME/.config/bash"
 
 # Copy configuration files
-cp ${SCRIPT_DIR}/bash-rc            "$HOME/.config/bash/"
-cp ${SCRIPT_DIR}/bash-profile       "$HOME/.config/bash/"
-cp ${SCRIPT_DIR}/bash-inputrc*      "$HOME/.config/bash/"
-cp ${SCRIPT_DIR}/bash-aliases*.sh   "$HOME/.config/bash/"
-cp ${SCRIPT_DIR}/bash-prompt*.sh    "$HOME/.config/bash/"
-cp ${SCRIPT_DIR}/bash-functions*.sh "$HOME/.config/bash/"
-cp ${SCRIPT_DIR}/bash-general.sh    "$HOME/.config/bash/"
-cp ${SCRIPT_DIR}/bash-local-*.sh    "$HOME/.config/bash/"
+cp ${SCRIPT_DIR}/bash-rc              "$HOME/.config/bash/"
+cp ${SCRIPT_DIR}/bash-profile         "$HOME/.config/bash/"
+cp ${SCRIPT_DIR}/bash-inputrc*        "$HOME/.config/bash/"
+cp ${SCRIPT_DIR}/bash-aliases*.sh     "$HOME/.config/bash/"
+cp ${SCRIPT_DIR}/bash-prompt*.sh      "$HOME/.config/bash/"
+cp ${SCRIPT_DIR}/bash-functions*.sh   "$HOME/.config/bash/"
+cp ${SCRIPT_DIR}/bash-general.sh      "$HOME/.config/bash/"
+cp ${SCRIPT_DIR}/bash-local-*.sh      "$HOME/.config/bash/"
+
+ln -fs "$HOME/.config/bash/bash-local-${ENV}.sh" "$HOME/.config/bash/bash-local.sh"
 
 # Copy loader script
 cp ${SCRIPT_DIR}/bash-loader.sh "$HOME/.config/bash/bash-loader.sh"

@@ -136,7 +136,6 @@ main() {
                 echo "source \"$loader_file\""
             fi
         done
-        echo "source \"${HOME}/.config/bash/bash-local-${ENV}.sh\""
         echo "source \"${scripts_dir}/loader.sh\""
     } > "$HOME/.config/loader.sh"
 

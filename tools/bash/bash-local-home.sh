@@ -12,11 +12,11 @@ GNOME_TERMINAL_IS_RUNNING=false
 # digits, i.e. a non-empty line that is composed of nothing but digits. 
 # Using this regular expression in [[ ... =~ there ]] in bash 3.2 or above, 
 # should be unquoted, i.e. ^[0-9]+$ instead of '^[0-9]+$'.
-if [[ $GNOME_TERMINAL_PID =~ ^[0-9]+$ ]]; then
-    # switch to it
-    GNOME_TERMINAL_IS_RUNNING=true
-    #echo "GNOME terminal is already running"
-fi
+# if [[ $GNOME_TERMINAL_PID =~ ^[0-9]+$ ]]; then
+#     # switch to it
+#     GNOME_TERMINAL_IS_RUNNING=true
+#     #echo "GNOME terminal is already running"
+# fi
 
 # Start tmux on every (graphical) shell login and try to attach to the default
 # session specified by `DEFAULT_TMUX_SESSION`

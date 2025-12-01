@@ -313,4 +313,4 @@
 
 [include]
     # For personal configuration e.g., user and email
-    path= ~/.config/config-local
+    path= ~/.config/git/config-local

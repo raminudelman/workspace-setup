@@ -90,6 +90,8 @@ function parse_args() {
 main() {
     parse_args "$@"
 
+    echo "🚀 Starting workspace installation with environment: ${ENV} and profile: ${PROFILE}"
+
     # Read the tools directory and run the installer of each tool
     for tool_dir in ./tools/*/; do
         tool_name="$(basename "$tool_dir")"

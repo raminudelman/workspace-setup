@@ -12,6 +12,10 @@ To install:
 >
 > Check available environments and profiles run `./install.sh --help`
 
+> **Note**
+>
+> Profile affects for example which gitconfig is installed. See `tools/git/git-install.sh` for details.
+
 ## Testing 
 To install locally, and to see how the workspace will be setup, run `./test.sh` and check the newly created `./install/` directory.
 

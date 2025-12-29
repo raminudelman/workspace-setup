@@ -38,6 +38,8 @@ ln -fs "$HOME/.config/bash/bash-rc" "$HOME/.bashrc"
 ln -fs "$HOME/.config/bash/bash-profile" "$HOME/.bash_profile"
 ln -fs "$HOME/.config/bash/bash-inputrc" "$HOME/.inputrc"
 
+echo "✅ Successfully installed bash"
+
 # Restore (pop) the previous SCRIPT_DIR from the stack
 if [ -n "${SCRIPT_DIR_STACK+x}" ] && [ ${#SCRIPT_DIR_STACK[@]} -gt 0 ]; then
     SCRIPT_DIR="${SCRIPT_DIR_STACK[-1]}"

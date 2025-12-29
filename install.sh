@@ -95,12 +95,14 @@ main() {
     # Read the tools directory and run the installer of each tool
     for tool_dir in ${SCRIPT_DIR}/tools/*/; do
         tool_name="$(basename "$tool_dir")"
+        echo "================================================================"
         if [ -f "$tool_dir/$tool_name-install.sh" ]; then
             echo "🚀 Installing tool: $tool_name"
             $tool_dir/$tool_name-install.sh ${ENV} ${PROFILE}
         else
             echo "No installer found for tool: $tool_name (skipping)"
         fi
+        echo "================================================================"
     done
 
     # Install scripts to workspace

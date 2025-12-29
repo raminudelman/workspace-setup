@@ -43,9 +43,9 @@ else
     unset SCRIPT_DIR
 fi
 
+echo "✅ Successfully installed git"
 
 exit 0 # TODO: Need to make this script work and download a standalone git binary!
-
 
 # tar required
 if ! command -v tar >/dev/null 2>&1; then
@@ -101,7 +101,4 @@ make configure
 ./configure --prefix="$INSTALL_DIR"
 make -j$(nproc) all
 make install
-
-
-echo "✅ Successfully installed Git!"
 

@@ -69,13 +69,13 @@ main() {
     mkdir -p "${INSTALL_DIR}"
 
     # Run the installation script
-    echo "Running install.sh with HOME=${INSTALL_DIR}"
+    echo "⚙️ Running install.sh with HOME=${INSTALL_DIR}"
 
     # Setting HOME so the test will not interfere with the actual user
     # configuration files.
     HOME=${INSTALL_DIR} ${SCRIPT_DIR}/install.sh --env default --profile default
 
-    echo "Continue the test to source .bashrc"
+    echo "⚙️ Continue the test to source .bashrc"
 
     if [ ! -f "${INSTALL_DIR}/.bashrc" ]; then
         echo "Error: ${INSTALL_DIR}/.bashrc not found!"
@@ -91,7 +91,9 @@ main() {
        which tmux &&\
        which git"
 
+    echo "================================================================"
     echo "✅ Test installation completed successfully in ${INSTALL_DIR}"
+    echo "================================================================"
 }
 
 # https://unix.stackexchange.com/questions/449498/call-function-declared-below

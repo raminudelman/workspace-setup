@@ -68,6 +68,8 @@ rm lazygit.tar.gz
 mkdir -p "$HOME/.config/lazygit"
 cp ${SCRIPT_DIR}/lazygit-loader.sh "$HOME/.config/lazygit/lazygit-loader.sh"
 
+echo "✅ Successfully installed lazygit"
+
 # Restore (pop) the previous SCRIPT_DIR from the stack
 if [ -n "${SCRIPT_DIR_STACK+x}" ] && [ ${#SCRIPT_DIR_STACK[@]} -gt 0 ]; then
     SCRIPT_DIR="${SCRIPT_DIR_STACK[-1]}"

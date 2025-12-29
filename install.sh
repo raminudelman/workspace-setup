@@ -30,7 +30,7 @@ usage() {
     echo ""
     echo "Available environments: "
     # List available environments based on existing bash-local-*.sh files
-    for file in ./tools/bash/bash-local-*.sh; do
+    for file in ${SCRIPT_DIR}/tools/bash/bash-local-*.sh; do
         env_name=$(basename "$file" | sed -E 's/bash-local-(.*)\.sh/\1/')
         if ([ "$env_name" == "${DEFAULT_ENV}" ]); then
             echo "  - $env_name (default)"
@@ -93,7 +93,7 @@ main() {
     echo "🚀 Starting workspace installation with environment: ${ENV} and profile: ${PROFILE}"
 
     # Read the tools directory and run the installer of each tool
-    for tool_dir in ./tools/*/; do
+    for tool_dir in ${SCRIPT_DIR}/tools/*/; do
         tool_name="$(basename "$tool_dir")"
         if [ -f "$tool_dir/$tool_name-install.sh" ]; then
             echo "🚀 Installing tool: $tool_name"
@@ -105,7 +105,7 @@ main() {
 
     # Install scripts to workspace
     local scripts_dir="${HOME}/workspace/scripts"
-    cp -r ./scripts "${scripts_dir}"
+    cp -r ${SCRIPT_DIR}/scripts "${scripts_dir}"
     echo "📁 Copied scripts to workspace directory"
     # Build the loader.sh script dynamically based on the available directories
     # in scripts/ and make sure these are added to the PATH through a loader
@@ -131,7 +131,7 @@ main() {
         echo "# Generated on $(date)"
         echo ""
         
-        for tool_dir in ./tools/*/; do
+        for tool_dir in ${SCRIPT_DIR}/tools/*/; do
             tool_name="$(basename "$tool_dir")"
             loader_file="$HOME/.config/$tool_name/$tool_name-loader.sh"
             if [ -f "$tool_dir/$tool_name-loader.sh" ] && [ -f "$loader_file" ]; then

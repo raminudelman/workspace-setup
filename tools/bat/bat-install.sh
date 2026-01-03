@@ -79,7 +79,7 @@ fi
 
 # Copy loader script to be loaded/sourced in shell
 mkdir -p "$LOADER_DIR"
-cp ${SCRIPT_DIR}/bat-loader.sh "$LOADER_DIR/bat-loader.sh"
+ln -sf "${SCRIPT_DIR}/bat-loader.sh" "$LOADER_DIR/bat-loader.sh"
 
 echo "✅ Successfully installed bat"
 

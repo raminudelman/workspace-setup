@@ -16,24 +16,27 @@ ENV="${1:-default}"
 
 echo "⚙️ Starting Bash installation..."
 
+CONFIG_DIR="$HOME/.config/bash"
+
 # Create necessary directories
-mkdir -p "$HOME/.config/bash"
+mkdir -p "$CONFIG_DIR"
 
 # Copy configuration files
-cp ${SCRIPT_DIR}/bash-rc              "$HOME/.config/bash/"
-cp ${SCRIPT_DIR}/bash-profile         "$HOME/.config/bash/"
-cp ${SCRIPT_DIR}/bash-inputrc*        "$HOME/.config/bash/"
-cp ${SCRIPT_DIR}/bash-aliases*.sh     "$HOME/.config/bash/"
-cp ${SCRIPT_DIR}/bash-prompt*.sh      "$HOME/.config/bash/"
-cp ${SCRIPT_DIR}/bash-functions*.sh   "$HOME/.config/bash/"
-cp ${SCRIPT_DIR}/bash-general.sh      "$HOME/.config/bash/"
-cp ${SCRIPT_DIR}/bash-local-*.sh      "$HOME/.config/bash/"
+ln -sf ${SCRIPT_DIR}/bash-rc              "$CONFIG_DIR/"
+ln -sf ${SCRIPT_DIR}/bash-profile         "$CONFIG_DIR/"
+ln -sf ${SCRIPT_DIR}/bash-inputrc*        "$CONFIG_DIR/"
+ln -sf ${SCRIPT_DIR}/bash-aliases*.sh     "$CONFIG_DIR/"
+ln -sf ${SCRIPT_DIR}/bash-prompt*.sh      "$CONFIG_DIR/"
+ln -sf ${SCRIPT_DIR}/bash-functions*.sh   "$CONFIG_DIR/"
+ln -sf ${SCRIPT_DIR}/bash-general.sh      "$CONFIG_DIR/"
+ln -sf ${SCRIPT_DIR}/bash-local-*.sh      "$CONFIG_DIR/"
 
-ln -fs "$HOME/.config/bash/bash-local-${ENV}.sh" "$HOME/.config/bash/bash-local.sh"
+ln -fs "$HOME/.config/bash/bash-local-${ENV}.sh" "$CONFIG_DIR/bash-local.sh"
 
-# Copy loader script
-cp ${SCRIPT_DIR}/bash-loader.sh "$HOME/.config/bash/bash-loader.sh"
+# Link loader script
+ln -sf ${SCRIPT_DIR}/bash-loader.sh "$CONFIG_DIR/bash-loader.sh"
 
+# Link bash configuration files to home directory
 ln -fs "$HOME/.config/bash/bash-rc" "$HOME/.bashrc"
 ln -fs "$HOME/.config/bash/bash-profile" "$HOME/.bash_profile"
 ln -fs "$HOME/.config/bash/bash-inputrc" "$HOME/.inputrc"

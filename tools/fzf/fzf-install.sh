@@ -18,6 +18,7 @@ set -euo pipefail
 
 # Set the target installation directory.
 INSTALL_DIR="$HOME/workspace/software/fzf/fzf"
+CONFIG_DIR="$HOME/.config/fzf"
 
 echo "⚙️ Starting installing fzf..."
 
@@ -44,9 +45,10 @@ echo "⚙️ Building the fzf binary..."
 ${INSTALL_DIR}/install --bin --no-bash --no-completion --no-key-bindings
 
 echo "⚙️ Copying configuration files"
-mkdir -p "$HOME/.config/fzf"
-cp ${SCRIPT_DIR}/fzf.bash "$HOME/.config/fzf/fzf.bash"
-cp ${SCRIPT_DIR}/fzf-loader.sh "$HOME/.config/fzf/fzf-loader.sh"
+mkdir -p "$CONFIG_DIR"
+
+ln -sf "${SCRIPT_DIR}/fzf.bash" "$CONFIG_DIR/fzf.bash"
+ln -sf "${SCRIPT_DIR}/fzf-loader.sh" "$CONFIG_DIR/fzf-loader.sh"
 
 echo "✅ Successfully installed fzf"
 

@@ -32,6 +32,7 @@ error() {
 
 # --- Configuration ---
 INSTALL_DIR="$HOME/workspace/software/lazygit/lazygit"
+CONFIG_DIR="$HOME/.config/lazygit"
 
 # --- Pre-flight Checks ---
 info "Starting lazygit binary installation..."
@@ -59,16 +60,19 @@ curl -Lo lazygit.tar.gz "$LG_URL"
 # 3. Create the installation directory and extract the binary
 info "Installing lazygit to $INSTALL_DIR/bin/"
 mkdir -p "$INSTALL_DIR/bin"
+
 # Extract *only* the 'lazygit' binary from the archive directly into the target dir
+info "Extracting lazygit binary"
 tar -xzf lazygit.tar.gz -C "$INSTALL_DIR/bin/" lazygit
 
 # 4. Clean up the downloaded archive
+info "Cleaning up temporary files"
 rm lazygit.tar.gz
 
-mkdir -p "$HOME/.config/lazygit"
-cp ${SCRIPT_DIR}/lazygit-loader.sh "$HOME/.config/lazygit/lazygit-loader.sh"
+mkdir -p "$CONFIG_DIR"
+ln -sf "${SCRIPT_DIR}/lazygit-loader.sh" "$CONFIG_DIR/lazygit-loader.sh"
 
-echo "✅ Successfully installed lazygit"
+success "Successfully installed lazygit"
 
 # Restore (pop) the previous SCRIPT_DIR from the stack
 if [ -n "${SCRIPT_DIR_STACK+x}" ] && [ ${#SCRIPT_DIR_STACK[@]} -gt 0 ]; then

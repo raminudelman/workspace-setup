@@ -18,7 +18,7 @@ set -euo pipefail
 # Set the target installation directory.
 INSTALL_DIR="$HOME/workspace/software/delta/delta"
 BIN_DIR="$INSTALL_DIR/bin"
-LOADER_DIR="$HOME/.config/delta"
+CONFIG_DIR="$HOME/.config/delta"
 
 echo "⚙️ Starting installing delta..."
 
@@ -52,9 +52,9 @@ curl -L "$DOWNLOAD_URL" | tar -xzf - --strip-components=1 -C "$INSTALL_DIR"
 # Move the binary to the bin directory.
 mv "$INSTALL_DIR/delta" "$BIN_DIR/delta"
 
-# Copy loader script to be loaded/sourced in shell
-mkdir -p "$HOME/.config/delta"
-cp ${SCRIPT_DIR}/delta-loader.sh "${LOADER_DIR}/delta-loader.sh"
+# Link loader script to be loaded/sourced in shell
+mkdir -p "${CONFIG_DIR}"
+ln -sf "${SCRIPT_DIR}/delta-loader.sh" "${CONFIG_DIR}/delta-loader.sh"
 
 echo "✅ Successfully installed delta"
 

@@ -14,7 +14,7 @@ fi
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 INSTALL_DIR="$HOME/workspace/software/git/git"
-LOADER_DIR="$HOME/.config/git"
+CONFIG_DIR="$HOME/.config/git"
 
 # Exit on error, undefined variable, pipe failure.
 set -euo pipefail
@@ -25,15 +25,16 @@ PROFILE="${2:-default}"
 
 echo "⚙️ Starting Git installation..."
 
-mkdir -p "${LOADER_DIR}"
+mkdir -p "${CONFIG_DIR}"
 
-# Copy loader script
-cp ${SCRIPT_DIR}/git-loader.sh "${LOADER_DIR}/git-loader.sh"
-cp ${SCRIPT_DIR}/git-completion.bash "$HOME/.config/git/git-completion.bash"
-cp ${SCRIPT_DIR}/git-message "$HOME/.config/git/git-message"
-cp ${SCRIPT_DIR}/git-config "$HOME/.config/git/config"
-cp ${SCRIPT_DIR}/git-config-local-${PROFILE} "$HOME/.config/git/config-local"
-ln -s "$HOME/.config/git/config" "$HOME/.gitconfig" # TODO: In new versions if git - no need for ~/.gitconfig. Git should pick up ~/.config/git/config automatically
+# Link git configuration files
+ln -sf "${SCRIPT_DIR}/git-loader.sh" "${CONFIG_DIR}/git-loader.sh"
+ln -sf "${SCRIPT_DIR}/git-completion.bash" "${CONFIG_DIR}/git-completion.bash"
+ln -sf "${SCRIPT_DIR}/git-message" "${CONFIG_DIR}/git-message"
+ln -sf "${SCRIPT_DIR}/git-config" "${CONFIG_DIR}/config"
+ln -sf "${SCRIPT_DIR}/git-config-local-${PROFILE}" "${CONFIG_DIR}/config-local"
+
+ln -sf "$HOME/.config/git/config" "$HOME/.gitconfig" # TODO: In new versions if git - no need for ~/.gitconfig. Git should pick up ~/.config/git/config automatically
 
 # Restore (pop) the previous SCRIPT_DIR from the stack
 if [ -n "${SCRIPT_DIR_STACK+x}" ] && [ ${#SCRIPT_DIR_STACK[@]} -gt 0 ]; then

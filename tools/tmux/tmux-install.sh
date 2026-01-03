@@ -16,7 +16,7 @@ SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 set -euo pipefail
 
 INSTALL_DIR="${HOME}/workspace/software/tmux/tmux/bin"
-LOADER_DIR="${HOME}/.config/tmux"
+CONFIG_DIR="${HOME}/.config/tmux"
 
 # Check if the installation directory already exists
 if [ -d "$INSTALL_DIR" ]; then
@@ -49,10 +49,10 @@ mkdir -p "${INSTALL_DIR}"
 install -m 755 "$TMPFILE" "${INSTALL_DIR}/tmux"
 
 echo "⚙️ Copying tmux configuration files"
-mkdir -p "${HOME}/.config/tmux"
-cp ${SCRIPT_DIR}/tmux.conf "${HOME}/.config/tmux/tmux.conf"
-cp ${SCRIPT_DIR}/tmux.conf.common "${HOME}/.config/tmux/tmux.conf.common"
-cp ${SCRIPT_DIR}/tmux.conf.home "${HOME}/.config/tmux/tmux.conf.home"
+mkdir -p "${CONFIG_DIR}"
+ln -sf "${SCRIPT_DIR}/tmux.conf" "${CONFIG_DIR}/tmux.conf"
+ln -sf "${SCRIPT_DIR}/tmux.conf.common" "${CONFIG_DIR}/tmux.conf.common"
+ln -sf "${SCRIPT_DIR}/tmux.conf.home" "${CONFIG_DIR}/tmux.conf.home"
 
 echo "⚙️ Installing TPM (Tmux Plugin Manager) and plugins"
 TPM_PLUGIN_MANAGER_DIR=${HOME}/.config/tmux/plugins/tpm
@@ -62,8 +62,8 @@ fi
 ${TPM_PLUGIN_MANAGER_DIR}/bin/install_plugins
 
 echo "⚙️ Setting up tmux loader script"
-mkdir -p "$LOADER_DIR"
-cp ${SCRIPT_DIR}/tmux-loader.sh "$LOADER_DIR/tmux-loader.sh"
+mkdir -p "$CONFIG_DIR"
+ln -sf "${SCRIPT_DIR}/tmux-loader.sh" "$CONFIG_DIR/tmux-loader.sh"
 
 echo "✅ Successfully installed tmux"
 

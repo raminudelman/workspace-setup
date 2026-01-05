@@ -1,3 +1,44 @@
 [user]
     name = Name Example
     email = example@example.com
+
+[core]
+    # Set the git editor
+    editor = code --wait
+	pager = delta
+
+[interactive]
+	diffFilter = delta --color-only
+
+[diff]
+
+    # Use vscode as the diff tool for git
+    tool = vscode
+
+[delta]
+	navigate = true
+
+[difftool "vscode"]
+    cmd = code --wait --diff "$LOCAL" "$REMOTE"
+    prompt = false
+
+[merge]
+
+    tool = vscode
+
+    # Include summaries of merged commits in newly created merge commit messages
+    log = true
+
+[mergetool "vscode"]
+
+    # Use vscode as the merge tool for git
+    cmd = code --wait "$MERGED"
+
+    # Don't prompt before opening the merge tool.
+    prompt = false
+
+    # Don't keep backups of the merge tool inputs.
+    # keepBackup = false
+
+    # Don't keep the merge tool temporary input/output files.
+    # keepTemporaries = false

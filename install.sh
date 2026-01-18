@@ -19,19 +19,34 @@ source "${SCRIPT_DIR}/lib/config-parser.sh"
 # Default config file
 CONFIG_FILE="${SCRIPT_DIR}/config.toml"
 
+# Environment override (empty means use default from config)
+ENV_OVERRIDE=""
+
 usage() {
     echo "Usage: $0 [options]"
     echo "  -c, --config        Specify the config file (default: config.toml)"
+    echo "  -e, --env           Specify the environment to use"
     echo "  --debug             Enable debug mode"
     echo "  --dry-run           Perform a dry run without making changes"
     echo "  -h, --help          Display this help message"
     echo ""
     if [ -f "$CONFIG_FILE" ]; then
         local config_profile=$(get_profile_name "$CONFIG_FILE")
-        local config_env=$(get_environment_name "$CONFIG_FILE")
+        local default_env=$(get_default_environment "$CONFIG_FILE")
+        local available_envs=$(get_available_environments "$CONFIG_FILE")
         echo "Current config: $CONFIG_FILE"
         echo "  Profile: ${config_profile}"
-        echo "  Environment: ${config_env}"
+        echo "  Default environment: ${default_env}"
+        echo ""
+        echo "Available environments:"
+        for env in $available_envs; do
+            local desc=$(get_environment_description "$CONFIG_FILE" "$env")
+            if [ "$env" == "$default_env" ]; then
+                echo "  - $env (default): $desc"
+            else
+                echo "  - $env: $desc"
+            fi
+        done
     fi
 }
 
@@ -41,6 +56,11 @@ function parse_args() {
         case "$1" in
         -c | --config)
             CONFIG_FILE="$2"
+            shift 2
+            continue
+            ;;
+        -e | --env)
+            ENV_OVERRIDE="$2"
             shift 2
             continue
             ;;
@@ -85,11 +105,23 @@ main() {
 
     # Read profile and environment from config file
     local profile=$(get_profile_name "$CONFIG_FILE")
-    local env=$(get_environment_name "$CONFIG_FILE")
+    local env=$(get_default_environment "$CONFIG_FILE")
+    
+    # Use override if provided
+    if [ -n "$ENV_OVERRIDE" ]; then
+        env="$ENV_OVERRIDE"
+    fi
     
     # Default to "default" if not specified in config
     profile="${profile:-default}"
     env="${env:-default}"
+    
+    # Validate that the environment is available
+    if ! is_valid_environment "$CONFIG_FILE" "$env"; then
+        echo "❌ Error: Invalid environment '$env'" >&2
+        echo "Available environments: $(get_available_environments "$CONFIG_FILE")" >&2
+        exit 1
+    fi
 
     echo "🚀 Starting workspace installation"
     echo "   Config: ${CONFIG_FILE}"
@@ -102,9 +134,9 @@ main() {
         tool_name="$(basename "$tool_dir")"
         echo "================================================================"
         
-        # Check if tool is enabled in config
-        if ! check_tool_enabled "$CONFIG_FILE" "$tool_name"; then
-            echo "⏭️  Skipping tool: $tool_name (disabled in config)"
+        # Check if tool is enabled in config for this environment
+        if ! check_tool_enabled "$CONFIG_FILE" "$tool_name" "$env"; then
+            echo "⏭️  Skipping tool: $tool_name (disabled or not available in '$env' environment)"
             continue
         fi
         

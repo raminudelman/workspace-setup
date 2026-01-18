@@ -60,7 +60,7 @@ install -m 755 "$TMPFILE" "${INSTALL_DIR}/tmux"
 echo "⚙️ Copying tmux configuration files"
 mkdir -p "${CONFIG_DIR}"
 ln -sf "${SCRIPT_DIR}/tmux-conf" "${CONFIG_DIR}/tmux.conf"
-ln -sf "${SCRIPT_DIR}/tmux-conf-common" "${CONFIG_DIR}/tmux.conf.common"
+ln -sf "${SCRIPT_DIR}/tmux-conf-${PROFILE}-common" "${CONFIG_DIR}/tmux.conf.common"
 ln -sf "${SCRIPT_DIR}/tmux-conf-${PROFILE}-${ENV}" "${CONFIG_DIR}/tmux.conf.local"
 
 echo "⚙️ Installing TPM (Tmux Plugin Manager) and plugins"

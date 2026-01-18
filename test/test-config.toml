@@ -5,12 +5,21 @@
 name = "default"
 description = "Base configuration template"
 
-[environment]
-name = "default"
-description = "Default environment"
+# Environment configuration
+# Define available environments and the default one
+[environments]
+default = "laptop"
+available = ["laptop", "desktop"]
+
+[environments.laptop]
+description = "Laptop environment - lighter settings, battery-conscious"
+
+[environments.desktop]
+description = "Desktop environment - full power, multiple monitors"
 
 # Tool installation control
 # Set enabled = false to skip installing a specific tool
+# Use 'environments' to restrict a tool to specific environments only
 [tools]
 
 [tools.bash]
@@ -30,12 +39,14 @@ enabled = true
 
 [tools.delta]
 enabled = true
+environments = ["laptop"]  # Only install delta on laptop
 
 [tools.tmux]
 enabled = true
 
 [tools.lazygit]
 enabled = true
+environments = ["desktop"]  # Only install lazygit on desktop
 
 # Scripts installation
 [scripts]

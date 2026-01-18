@@ -20,41 +20,59 @@ INSTALL_DIR="$HOME/workspace/software/delta/delta"
 BIN_DIR="$INSTALL_DIR/bin"
 CONFIG_DIR="$HOME/.config/delta"
 
+# ------------------------------------------------------------------------------
+# Functions
+# ------------------------------------------------------------------------------
+
+install_binary() {
+    if [ -d "$INSTALL_DIR" ]; then
+        echo "⚠️ Warning: Directory '$INSTALL_DIR' already exists. Skipping binary installation."
+        return 0
+    fi
+
+    # Get the latest version tag from the GitHub API.
+    echo "⚙️ Finding the latest version of delta..."
+    LATEST_TAG=$(curl -s "https://api.github.com/repos/dandavison/delta/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")')
+
+    if [ -z "$LATEST_TAG" ]; then
+        echo "❌ Error: Could not fetch the latest version tag. Check your internet connection."
+        return 1
+    fi
+
+    echo "⚙️ Latest version found: $LATEST_TAG"
+    DOWNLOAD_URL="https://github.com/dandavison/delta/releases/download/$LATEST_TAG/delta-$LATEST_TAG-x86_64-unknown-linux-gnu.tar.gz"
+
+    echo "⚙️ Creating installation directory at $BIN_DIR"
+    mkdir -p "$BIN_DIR"
+
+    # Download and extract the binary.
+    echo "⚙️ Downloading and extracting from $DOWNLOAD_URL"
+    # The tarball contains a directory, so we strip the top-level directory.
+    curl -L "$DOWNLOAD_URL" | tar -xzf - --strip-components=1 -C "$INSTALL_DIR"
+
+    # Move the binary to the bin directory.
+    mv "$INSTALL_DIR/delta" "$BIN_DIR/delta"
+}
+
+install_config() {
+    if [ -f "${CONFIG_DIR}/delta-loader.sh" ]; then
+        echo "⚠️ Warning: Config already exists. Skipping config installation."
+        return 0
+    fi
+
+    echo "⚙️ Installing delta config files..."
+    mkdir -p "${CONFIG_DIR}"
+    ln -sf "${SCRIPT_DIR}/delta-loader.sh" "${CONFIG_DIR}/delta-loader.sh"
+}
+
+# ------------------------------------------------------------------------------
+# Main
+# ------------------------------------------------------------------------------
+
 echo "⚙️ Starting installing delta..."
 
-# Check if the installation directory already exists
-if [ -d "$INSTALL_DIR" ]; then
-    echo "❌ Error: Directory '$INSTALL_DIR' already exists."
-    echo "Please remove it or choose a different location before running this script."
-    exit 1
-fi
-
-# Get the latest version tag from the GitHub API.
-echo "⚙️ Finding the latest version of delta..."
-LATEST_TAG=$(curl -s "https://api.github.com/repos/dandavison/delta/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")')
-
-if [ -z "$LATEST_TAG" ]; then
-  echo "❌ Error: Could not fetch the latest version tag. Check your internet connection."
-  exit 1
-fi
-
-echo "⚙️ Latest version found: $LATEST_TAG"
-DOWNLOAD_URL="https://github.com/dandavison/delta/releases/download/$LATEST_TAG/delta-$LATEST_TAG-x86_64-unknown-linux-gnu.tar.gz"
-
-echo "⚙️ Creating installation directory at $BIN_DIR"
-mkdir -p "$BIN_DIR"
-
-# Download and extract the binary.
-echo "⚙️ Downloading and extracting from $DOWNLOAD_URL"
-# The tarball contains a directory, so we strip the top-level directory.
-curl -L "$DOWNLOAD_URL" | tar -xzf - --strip-components=1 -C "$INSTALL_DIR"
-
-# Move the binary to the bin directory.
-mv "$INSTALL_DIR/delta" "$BIN_DIR/delta"
-
-# Link loader script to be loaded/sourced in shell
-mkdir -p "${CONFIG_DIR}"
-ln -sf "${SCRIPT_DIR}/delta-loader.sh" "${CONFIG_DIR}/delta-loader.sh"
+install_binary
+install_config
 
 echo "✅ Successfully installed delta"
 

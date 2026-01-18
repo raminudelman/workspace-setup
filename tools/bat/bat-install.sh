@@ -39,47 +39,65 @@ esac
 BAT_VERSION="v0.24.0"  # Update this to the latest version as needed
 DOWNLOAD_URL="https://github.com/sharkdp/bat/releases/download/${BAT_VERSION}/bat-${BAT_VERSION}-${ARCH}-unknown-linux-musl.tar.gz"
 
+# ------------------------------------------------------------------------------
+# Functions
+# ------------------------------------------------------------------------------
+
+install_binary() {
+    if [ -d "$INSTALL_DIR" ]; then
+        echo "⚠️ Warning: Directory '$INSTALL_DIR' already exists. Skipping binary installation."
+        return 0
+    fi
+
+    # Create a temporary directory for downloading
+    TEMP_DIR=$(mktemp -d)
+    trap "rm -rf $TEMP_DIR" EXIT
+
+    echo "⚙️ Downloading bat ${BAT_VERSION} for ${ARCH}..."
+    cd "$TEMP_DIR"
+    curl -L -o bat.tar.gz "$DOWNLOAD_URL"
+
+    echo "⚙️ Extracting archive..."
+    tar -xzf bat.tar.gz
+
+    # Find the extracted directory (it includes version and architecture in the name)
+    EXTRACTED_DIR=$(find . -maxdepth 1 -type d -name "bat-*" | head -n 1)
+
+    if [ -z "$EXTRACTED_DIR" ]; then
+        echo "❌ Error: Failed to find extracted directory."
+        return 1
+    fi
+
+    echo "⚙️ Installing to $INSTALL_DIR..."
+    mkdir -p "$INSTALL_DIR/bin"
+    cp "$EXTRACTED_DIR/bat" "$INSTALL_DIR/bin/"
+    chmod +x "$INSTALL_DIR/bin/bat"
+
+    # Copy man pages and autocomplete files
+    if [ -d "$EXTRACTED_DIR/autocomplete" ]; then
+        cp -r "$EXTRACTED_DIR/autocomplete" "$INSTALL_DIR/"
+    fi
+}
+
+install_config() {
+    if [ -f "$LOADER_DIR/bat-loader.sh" ]; then
+        echo "⚠️ Warning: Config already exists. Skipping config installation."
+        return 0
+    fi
+
+    echo "⚙️ Installing bat config files..."
+    mkdir -p "$LOADER_DIR"
+    ln -sf "${SCRIPT_DIR}/bat-loader.sh" "$LOADER_DIR/bat-loader.sh"
+}
+
+# ------------------------------------------------------------------------------
+# Main
+# ------------------------------------------------------------------------------
+
 echo "⚙️ Starting installing bat..."
 
-# Check if the installation directory already exists
-if [ -d "$INSTALL_DIR" ]; then
-    echo "❌ Error: Directory '$INSTALL_DIR' already exists."
-    echo "Please remove it or choose a different location before running this script."
-    exit 1
-fi
-
-# Create a temporary directory for downloading
-TEMP_DIR=$(mktemp -d)
-trap "rm -rf $TEMP_DIR" EXIT
-
-echo "⚙️ Downloading bat ${BAT_VERSION} for ${ARCH}..."
-cd "$TEMP_DIR"
-curl -L -o bat.tar.gz "$DOWNLOAD_URL"
-
-echo "⚙️ Extracting archive..."
-tar -xzf bat.tar.gz
-
-# Find the extracted directory (it includes version and architecture in the name)
-EXTRACTED_DIR=$(find . -maxdepth 1 -type d -name "bat-*" | head -n 1)
-
-if [ -z "$EXTRACTED_DIR" ]; then
-    echo "❌ Error: Failed to find extracted directory."
-    exit 1
-fi
-
-echo "⚙️ Installing to $INSTALL_DIR..."
-mkdir -p "$INSTALL_DIR/bin"
-cp "$EXTRACTED_DIR/bat" "$INSTALL_DIR/bin/"
-chmod +x "$INSTALL_DIR/bin/bat"
-
-# Copy man pages and autocomplete files
-if [ -d "$EXTRACTED_DIR/autocomplete" ]; then
-    cp -r "$EXTRACTED_DIR/autocomplete" "$INSTALL_DIR/"
-fi
-
-# Copy loader script to be loaded/sourced in shell
-mkdir -p "$LOADER_DIR"
-ln -sf "${SCRIPT_DIR}/bat-loader.sh" "$LOADER_DIR/bat-loader.sh"
+install_binary
+install_config
 
 echo "✅ Successfully installed bat"
 

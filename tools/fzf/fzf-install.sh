@@ -20,35 +20,51 @@ set -euo pipefail
 INSTALL_DIR="$HOME/workspace/software/fzf/fzf"
 CONFIG_DIR="$HOME/.config/fzf"
 
+# ------------------------------------------------------------------------------
+# Functions
+# ------------------------------------------------------------------------------
+
+install_binary() {
+    if [ -d "$INSTALL_DIR" ]; then
+        echo "⚠️ Warning: Directory '$INSTALL_DIR' already exists. Skipping binary installation."
+        return 0
+    fi
+
+    # Check if git is installed
+    if ! command -v git &> /dev/null; then
+        echo "❌ Error: git is not installed. Please install git and try again."
+        return 1
+    fi
+
+    echo "⚙️ Cloning fzf repository into '$INSTALL_DIR'..."
+    # Clone only the latest version for a faster download.
+    git clone --depth 1 https://github.com/junegunn/fzf.git "$INSTALL_DIR"
+
+    echo "⚙️ Building the fzf binary..."
+    # The --bin flag only builds the binary without installing any shell integration files.
+    ${INSTALL_DIR}/install --bin --no-bash --no-completion --no-key-bindings
+}
+
+install_config() {
+    if [ -f "$CONFIG_DIR/fzf-loader.sh" ]; then
+        echo "⚠️ Warning: Config already exists. Skipping config installation."
+        return 0
+    fi
+
+    echo "⚙️ Installing fzf config files..."
+    mkdir -p "$CONFIG_DIR"
+    ln -sf "${SCRIPT_DIR}/fzf.bash" "$CONFIG_DIR/fzf.bash"
+    ln -sf "${SCRIPT_DIR}/fzf-loader.sh" "$CONFIG_DIR/fzf-loader.sh"
+}
+
+# ------------------------------------------------------------------------------
+# Main
+# ------------------------------------------------------------------------------
+
 echo "⚙️ Starting installing fzf..."
 
-# Check if git is installed
-if ! command -v git &> /dev/null; then
-    echo "❌ Error: git is not installed. Please install git and try again."
-    exit 1
-fi
-
-# Check if the installation directory already exists
-if [ -d "$INSTALL_DIR" ]; then
-    echo "❌ Error: Directory '$INSTALL_DIR' already exists."
-    echo "Please remove it or choose a different location before running this script."
-    exit 1
-fi
-
-# --- Installation ---
-echo "⚙️ Cloning fzf repository into '$INSTALL_DIR'..."
-# Clone only the latest version for a faster download.
-git clone --depth 1 https://github.com/junegunn/fzf.git "$INSTALL_DIR"
-
-echo "⚙️ Building the fzf binary..."
-# The --bin flag only builds the binary without installing any shell integration files.
-${INSTALL_DIR}/install --bin --no-bash --no-completion --no-key-bindings
-
-echo "⚙️ Copying configuration files"
-mkdir -p "$CONFIG_DIR"
-
-ln -sf "${SCRIPT_DIR}/fzf.bash" "$CONFIG_DIR/fzf.bash"
-ln -sf "${SCRIPT_DIR}/fzf-loader.sh" "$CONFIG_DIR/fzf-loader.sh"
+install_binary
+install_config
 
 echo "✅ Successfully installed fzf"
 

@@ -1,0 +1,42 @@
+# Workspace Setup Configuration
+# This file defines which tools to install and profile/environment settings
+
+[profile]
+name = "default"
+description = "Base configuration template"
+
+[environment]
+name = "default"
+description = "Default environment"
+
+# Tool installation control
+# Set enabled = false to skip installing a specific tool
+[tools]
+
+[tools.bash]
+enabled = true
+
+[tools.git]
+enabled = true
+
+[tools.fzf]
+enabled = true
+
+[tools.eza]
+enabled = true
+
+[tools.bat]
+enabled = true
+
+[tools.delta]
+enabled = true
+
+[tools.tmux]
+enabled = true
+
+[tools.lazygit]
+enabled = true
+
+# Scripts installation
+[scripts]
+enabled = true

@@ -13,47 +13,34 @@ if [ -n "${SCRIPT_DIR+x}" ]; then
 fi
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
-# Default environment is default
-DEFAULT_ENV="default"
-ENV="$DEFAULT_ENV"
+# Source the config parser
+source "${SCRIPT_DIR}/lib/config-parser.sh"
 
-DEFAULT_PROFILE="default"
-PROFILE="$DEFAULT_PROFILE"
+# Default config file
+CONFIG_FILE="${SCRIPT_DIR}/config.toml"
 
 usage() {
     echo "Usage: $0 [options]"
-    echo "  -e, --env           Specify the environment"
-    echo "  -p, --profile       Specify the profile"
+    echo "  -c, --config        Specify the config file (default: config.toml)"
     echo "  --debug             Enable debug mode"
     echo "  --dry-run           Perform a dry run without making changes"
     echo "  -h, --help          Display this help message"
     echo ""
-    echo "Available environments: "
-    # List available environments based on existing bash-local-*.sh files
-    for file in ${SCRIPT_DIR}/tools/bash/bash-local-*.sh; do
-        env_name=$(basename "$file" | sed -E 's/bash-local-(.*)\.sh/\1/')
-        if ([ "$env_name" == "${DEFAULT_ENV}" ]); then
-            echo "  - $env_name (default)"
-            continue
-        fi
-        echo "  - $env_name"
-    done
-    echo ""
-    echo "Available profiles: "
-    echo "  - default (default)"
+    if [ -f "$CONFIG_FILE" ]; then
+        local config_profile=$(get_profile_name "$CONFIG_FILE")
+        local config_env=$(get_environment_name "$CONFIG_FILE")
+        echo "Current config: $CONFIG_FILE"
+        echo "  Profile: ${config_profile}"
+        echo "  Environment: ${config_env}"
+    fi
 }
 
 function parse_args() {
     # Parse arguments
     while [ $# -gt 0 ]; do
         case "$1" in
-        -e | --env)
-            ENV="$2"
-            shift 2
-            continue
-            ;;
-        -p | --profile)
-            PROFILE="$2"
+        -c | --config)
+            CONFIG_FILE="$2"
             shift 2
             continue
             ;;
@@ -90,15 +77,40 @@ function parse_args() {
 main() {
     parse_args "$@"
 
-    echo "🚀 Starting workspace installation with environment: ${ENV} and profile: ${PROFILE}"
+    # Validate config file exists
+    if [ ! -f "$CONFIG_FILE" ]; then
+        echo "❌ Error: Config file not found: $CONFIG_FILE" >&2
+        exit 1
+    fi
+
+    # Read profile and environment from config file
+    local profile=$(get_profile_name "$CONFIG_FILE")
+    local env=$(get_environment_name "$CONFIG_FILE")
+    
+    # Default to "default" if not specified in config
+    profile="${profile:-default}"
+    env="${env:-default}"
+
+    echo "🚀 Starting workspace installation"
+    echo "   Config: ${CONFIG_FILE}"
+    echo "   Profile: ${profile}"
+    echo "   Environment: ${env}"
+    echo ""
 
     # Read the tools directory and run the installer of each tool
     for tool_dir in ${SCRIPT_DIR}/tools/*/; do
         tool_name="$(basename "$tool_dir")"
         echo "================================================================"
+        
+        # Check if tool is enabled in config
+        if ! check_tool_enabled "$CONFIG_FILE" "$tool_name"; then
+            echo "⏭️  Skipping tool: $tool_name (disabled in config)"
+            continue
+        fi
+        
         if [ -f "$tool_dir/$tool_name-install.sh" ]; then
             echo "🚀 Installing tool: $tool_name"
-            $tool_dir/$tool_name-install.sh ${ENV} ${PROFILE}
+            $tool_dir/$tool_name-install.sh ${profile} ${env}
         else
             echo "No installer found for tool: $tool_name (skipping)"
         fi

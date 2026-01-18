@@ -15,8 +15,17 @@ SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 set -euo pipefail
 
+# Argument 1 expected to be profile.
+# Argument 2 expected to be environment.
+# Default is "default" for both
+PROFILE="${1:-default}"
+ENV="${2:-default}"
+
 INSTALL_DIR="${HOME}/workspace/software/tmux/tmux/bin"
 CONFIG_DIR="${HOME}/.config/tmux"
+
+echo "⚙️ Starting tmux installation..."
+echo "   Using profile-env: ${PROFILE}-${ENV}"
 
 # Check if the installation directory already exists
 if [ -d "$INSTALL_DIR" ]; then
@@ -50,9 +59,9 @@ install -m 755 "$TMPFILE" "${INSTALL_DIR}/tmux"
 
 echo "⚙️ Copying tmux configuration files"
 mkdir -p "${CONFIG_DIR}"
-ln -sf "${SCRIPT_DIR}/tmux.conf" "${CONFIG_DIR}/tmux.conf"
-ln -sf "${SCRIPT_DIR}/tmux.conf.common" "${CONFIG_DIR}/tmux.conf.common"
-ln -sf "${SCRIPT_DIR}/tmux.conf.home" "${CONFIG_DIR}/tmux.conf.home"
+ln -sf "${SCRIPT_DIR}/tmux-conf" "${CONFIG_DIR}/tmux.conf"
+ln -sf "${SCRIPT_DIR}/tmux-conf-common" "${CONFIG_DIR}/tmux.conf.common"
+ln -sf "${SCRIPT_DIR}/tmux-conf-${PROFILE}-${ENV}" "${CONFIG_DIR}/tmux.conf.local"
 
 echo "⚙️ Installing TPM (Tmux Plugin Manager) and plugins"
 TPM_PLUGIN_MANAGER_DIR=${HOME}/.config/tmux/plugins/tpm

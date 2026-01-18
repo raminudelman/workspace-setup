@@ -19,11 +19,14 @@ CONFIG_DIR="$HOME/.config/git"
 # Exit on error, undefined variable, pipe failure.
 set -euo pipefail
 
-# Argument 2 expected to be profile.
-# Default is "default"
-PROFILE="${2:-default}"
+# Argument 1 expected to be profile.
+# Argument 2 expected to be environment.
+# Default is "default" for both
+PROFILE="${1:-default}"
+ENV="${2:-default}"
 
 echo "⚙️ Starting Git installation..."
+echo "   Using profile-env: ${PROFILE}-${ENV}"
 
 mkdir -p "${CONFIG_DIR}"
 
@@ -32,7 +35,7 @@ ln -sf "${SCRIPT_DIR}/git-loader.sh" "${CONFIG_DIR}/git-loader.sh"
 ln -sf "${SCRIPT_DIR}/git-completion.bash" "${CONFIG_DIR}/git-completion.bash"
 ln -sf "${SCRIPT_DIR}/git-message" "${CONFIG_DIR}/git-message"
 ln -sf "${SCRIPT_DIR}/git-config" "${CONFIG_DIR}/config"
-ln -sf "${SCRIPT_DIR}/git-config-local-${PROFILE}" "${CONFIG_DIR}/config-local"
+ln -sf "${SCRIPT_DIR}/git-config-local-${PROFILE}-${ENV}" "${CONFIG_DIR}/config-local"
 
 ln -sf "$HOME/.config/git/config" "$HOME/.gitconfig" # TODO: In new versions if git - no need for ~/.gitconfig. Git should pick up ~/.config/git/config automatically
 

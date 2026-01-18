@@ -73,7 +73,7 @@ main() {
 
     # Setting HOME so the test will not interfere with the actual user
     # configuration files.
-    HOME=${INSTALL_DIR} ${SCRIPT_DIR}/install.sh --env default --profile default
+    HOME=${INSTALL_DIR} ${SCRIPT_DIR}/../install.sh --config ${SCRIPT_DIR}/test-config.toml
 
     echo "⚙️ Continue the test to source .bashrc"
 
@@ -98,5 +98,3 @@ main() {
 
 # https://unix.stackexchange.com/questions/449498/call-function-declared-below
 main "$@"; exit
-
-

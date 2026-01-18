@@ -10,11 +10,14 @@ if [ -n "${SCRIPT_DIR+x}" ]; then
 fi
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
-# Argument 1 expected to be environment.
-# Default is "default"
-ENV="${1:-default}"
+# Argument 1 expected to be profile.
+# Argument 2 expected to be environment.
+# Default is "default" for both
+PROFILE="${1:-default}"
+ENV="${2:-default}"
 
 echo "⚙️ Starting Bash installation..."
+echo "   Using profile-env: ${PROFILE}-${ENV}"
 
 CONFIG_DIR="$HOME/.config/bash"
 
@@ -31,7 +34,7 @@ ln -sf ${SCRIPT_DIR}/bash-functions*.sh   "$CONFIG_DIR/"
 ln -sf ${SCRIPT_DIR}/bash-general.sh      "$CONFIG_DIR/"
 ln -sf ${SCRIPT_DIR}/bash-local-*.sh      "$CONFIG_DIR/"
 
-ln -fs "$HOME/.config/bash/bash-local-${ENV}.sh" "$CONFIG_DIR/bash-local.sh"
+ln -fs "$HOME/.config/bash/bash-local-${PROFILE}-${ENV}.sh" "$CONFIG_DIR/bash-local.sh"
 
 # Link loader script
 ln -sf ${SCRIPT_DIR}/bash-loader.sh "$CONFIG_DIR/bash-loader.sh"

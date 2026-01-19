@@ -4,6 +4,7 @@
 usage() {
     echo "Usage: $0 [options]"
     echo "  -c, --clean-test    Clean previous installation before running the test"
+    echo "  -f, --config FILE   Specify the config file to use (default: test-config.toml)"
     echo "  --debug             Enable debug mode"
     echo "  --dry-run           Perform a dry run without making changes"
     echo "  -h, --help          Display this help message"
@@ -13,6 +14,9 @@ usage() {
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 INSTALL_DIR="${SCRIPT_DIR}/install/home"
+
+# Config file to use for the test
+CONFIG_FILE="${SCRIPT_DIR}/test-config.toml"
 
 # If set to true, cleans previous installation before running the test
 CLEAN_TEST=false
@@ -24,6 +28,15 @@ function parse_args() {
         -c | --clean-test)
             CLEAN_TEST=true
             shift 1
+            continue
+            ;;
+        -f | --config)
+            if [[ -z "$2" || "$2" == -* ]]; then
+                echo "Error: --config requires a file argument" >&2
+                exit 1
+            fi
+            CONFIG_FILE="$2"
+            shift 2
             continue
             ;;
         --debug)
@@ -70,10 +83,11 @@ main() {
 
     # Run the installation script
     echo "⚙️ Running install.sh with HOME=${INSTALL_DIR}"
+    echo "⚙️ Using config file: ${CONFIG_FILE}"
 
     # Setting HOME so the test will not interfere with the actual user
     # configuration files.
-    HOME=${INSTALL_DIR} ${SCRIPT_DIR}/../install.sh --config ${SCRIPT_DIR}/test-config.toml
+    HOME=${INSTALL_DIR} ${SCRIPT_DIR}/../install.sh --config ${CONFIG_FILE}
 
     echo "⚙️ Continue the test to source .bashrc"
 

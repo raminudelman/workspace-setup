@@ -1,0 +1,19 @@
+# Set the default terminal mode to 256color mode
+set-option -g default-terminal "xterm-256color" # Replacing "tmux-256color"
+# Adding support for truecolor explicitly
+set -a terminal-features "xterm-256color:RGB"
+
+# Length of status bar
+set -g status-right-length 100
+# In case the current pane in a git repo, show the status of git
+set -g status-right "#(~/.config/scripts/tmux-git-status.sh '#{pane_current_path}') "
+
+# It's a good practice better to call a script in a new window.
+bind f run-shell "tmux new-window ~/.config/scripts/tmux-session-dispensary.sh"
+bind P run-shell "tmux new-window ~/.config/scripts/tmux-session-dispensary.sh ~/workspace/projects"
+bind H run-shell "tmux new-window ~/.config/scripts/tmux-session-dispensary.sh ~"
+
+bind g run-shell "~/.config/scripts/open-github.sh"
+bind G neww -n "lazygit" lazygit
+
+bind E show-environment -g

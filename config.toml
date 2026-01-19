@@ -2,17 +2,14 @@
 # This file defines which tools to install and profile/environment settings
 
 [profile]
-name = "default"
+name = "home"
 description = "Base configuration template"
 
 # Environment configuration
 # Define available environments and the default one
 [environments]
-default = "laptop"
-available = ["laptop", "desktop"]
-
-[environments.laptop]
-description = "Laptop environment - lighter settings, battery-conscious"
+default = "desktop"
+available = ["desktop"]
 
 [environments.desktop]
 description = "Desktop environment - full power, multiple monitors"
@@ -39,14 +36,12 @@ enabled = true
 
 [tools.delta]
 enabled = true
-environments = ["laptop"]  # Only install delta on laptop
 
 [tools.tmux]
 enabled = true
 
 [tools.lazygit]
 enabled = true
-environments = ["desktop"]  # Only install lazygit on desktop
 
 # Scripts installation
 [scripts]

@@ -130,21 +130,26 @@ main() {
     echo ""
 
     # Read the tools directory and run the installer of each tool
-    for tool_dir in ${SCRIPT_DIR}/tools/*/; do
+    for tool_dir in "${SCRIPT_DIR}"/tools/*/; do
         tool_name="$(basename "$tool_dir")"
         echo "================================================================"
-        
         # Check if tool is enabled in config for this environment
         if ! check_tool_enabled "$CONFIG_FILE" "$tool_name" "$env"; then
             echo "⏭️  Skipping tool: $tool_name (disabled or not available in '$env' environment)"
             continue
         fi
-        
-        if [ -f "$tool_dir/$tool_name-install.sh" ]; then
+
+        installer="$tool_dir/${tool_name}-install.sh"
+        if [ -f "$installer" ]; then
             echo "🚀 Installing tool: $tool_name"
-            $tool_dir/$tool_name-install.sh ${profile} ${env}
+            # Run installer guarded so a failing installer doesn't abort the entire run
+            if ! bash "$installer" "$profile" "$env"; then
+                echo "❌ Error: Installer for $tool_name failed (see above). Continuing with next tool."
+                continue
+            fi
         else
-            echo "No installer found for tool: $tool_name (skipping)"
+            echo "❌ Error: No installer found for tool: $tool_name (skipping)"
+            exit 1
         fi
         echo "================================================================"
     done
@@ -152,8 +157,9 @@ main() {
     # Install scripts to workspace
     local scripts_dir="${HOME}/workspace/scripts"
     mkdir -p "${scripts_dir}"
-    cp -r ${SCRIPT_DIR}/scripts/* "${scripts_dir}/"
-    echo "📁 Copied scripts to workspace directory"
+    # Copy everything (including hidden files) from scripts/ into target
+    cp -r "${SCRIPT_DIR}/scripts/." "${scripts_dir}/"
+    echo "📁 Copied scripts to workspace directory: ${scripts_dir}"
     # Build the loader.sh script dynamically based on the available directories
     # in scripts/ and make sure these are added to the PATH through a loader
     # file that will be put in ${scripts_dir}/loader.sh

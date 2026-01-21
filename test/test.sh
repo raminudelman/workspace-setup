@@ -4,6 +4,7 @@
 usage() {
     echo "Usage: $0 [options]"
     echo "  -c, --clean-test    Clean previous installation before running the test"
+    echo "  -e, --env           Specify the environment to use"
     echo "  -f, --config FILE   Specify the config file to use (default: test-config.toml)"
     echo "  --debug             Enable debug mode"
     echo "  --dry-run           Perform a dry run without making changes"
@@ -18,6 +19,9 @@ INSTALL_DIR="${SCRIPT_DIR}/install/home"
 # Config file to use for the test
 CONFIG_FILE="${SCRIPT_DIR}/test-config.toml"
 
+# Environment override (empty means use default from the config file)
+ENV_OVERRIDE=""
+
 # If set to true, cleans previous installation before running the test
 CLEAN_TEST=false
 
@@ -28,6 +32,15 @@ function parse_args() {
         -c | --clean-test)
             CLEAN_TEST=true
             shift 1
+            continue
+            ;;
+        -e | --env)
+            if [[ -z "$2" || "$2" == -* ]]; then
+                echo "Error: --env requires an environment argument" >&2
+                exit 1
+            fi
+            ENV_OVERRIDE="$2"
+            shift 2
             continue
             ;;
         -f | --config)
@@ -84,10 +97,19 @@ main() {
     # Run the installation script
     echo "⚙️ Running install.sh with HOME=${INSTALL_DIR}"
     echo "⚙️ Using config file: ${CONFIG_FILE}"
+    if [ -n "$ENV_OVERRIDE" ]; then
+        echo "⚙️ Using environment: ${ENV_OVERRIDE}"
+    fi
+
+    # Build the install command arguments
+    local install_args=(--config "${CONFIG_FILE}")
+    if [ -n "$ENV_OVERRIDE" ]; then
+        install_args+=(--env "${ENV_OVERRIDE}")
+    fi
 
     # Setting HOME so the test will not interfere with the actual user
     # configuration files.
-    HOME=${INSTALL_DIR} ${SCRIPT_DIR}/../install.sh --config ${CONFIG_FILE}
+    HOME=${INSTALL_DIR} "${SCRIPT_DIR}/../install.sh" "${install_args[@]}"
 
     echo "⚙️ Continue the test to source .bashrc"
 

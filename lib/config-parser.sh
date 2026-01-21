@@ -54,7 +54,8 @@ get_config_value() {
                 result="${result#\"}"
                 result="${result%\"}"
                 result="${result%%#*}"
-                result="${result%% }"
+                # Trim trailing whitespace
+                result="${result%"${result##*[![:space:]]}"}"
                 echo "$result"
                 return 0
             fi
@@ -100,8 +101,8 @@ check_tool_enabled() {
             tool_envs="${tool_envs//,/ }"
             
             local found=0
-            for env in $tool_envs; do
-                if [ "$env" == "$environment" ]; then
+            for tool_env in $tool_envs; do
+                if [ "$tool_env" == "$environment" ]; then
                     found=1
                     break
                 fi

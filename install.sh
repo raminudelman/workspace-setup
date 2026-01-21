@@ -151,7 +151,8 @@ main() {
 
     # Install scripts to workspace
     local scripts_dir="${HOME}/workspace/scripts"
-    cp -r ${SCRIPT_DIR}/scripts "${scripts_dir}"
+    mkdir -p "${scripts_dir}"
+    cp -r ${SCRIPT_DIR}/scripts/* "${scripts_dir}/"
     echo "📁 Copied scripts to workspace directory"
     # Build the loader.sh script dynamically based on the available directories
     # in scripts/ and make sure these are added to the PATH through a loader

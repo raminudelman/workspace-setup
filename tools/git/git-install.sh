@@ -34,6 +34,7 @@ mkdir -p "${CONFIG_DIR}"
 ln -sf "${SCRIPT_DIR}/git-loader.sh" "${CONFIG_DIR}/git-loader.sh"
 ln -sf "${SCRIPT_DIR}/git-completion.bash" "${CONFIG_DIR}/git-completion.bash"
 ln -sf "${SCRIPT_DIR}/git-message" "${CONFIG_DIR}/git-message"
+ln -sf "${SCRIPT_DIR}/git-config" "${CONFIG_DIR}/config"
 ln -sf ${SCRIPT_DIR}/git-config* "${CONFIG_DIR}/"
 ln -sf "${SCRIPT_DIR}/git-config-local-${PROFILE}-${ENV}" "${CONFIG_DIR}/config-local"
 
